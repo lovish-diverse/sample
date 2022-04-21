@@ -18,6 +18,7 @@ const getDefaultData = () => ({
   close: "",
   openTime: "",
   closeTime: "",
+  key: "",
 });
 
 module.exports = { getCloseTime, getOpenTime, getDefaultData };

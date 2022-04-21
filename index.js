@@ -8,9 +8,15 @@ class Trade {
     this.coin = coin;
     this.socketURL = `wss://ws.bitmex.com/realtime?subscribe=trade:${coin}`;
     this.ws = new WebSocket(this.socketURL);
+    this.oneMinRecord = getDefaultData();
+    this.fiveMinRecord = getDefaultData();
+    this.fifteenMinRecord = getDefaultData();
+    this.oneHourRecord = getDefaultData();
+    this.fourHourRecord = getDefaultData();
+    this.oneDayRecord = getDefaultData();
   }
 
-  getData = () => {
+  getData() {
     const d = new Date().getTime();
     let oneMinOpenTime = getOpenTime(d, 1);
     let oneMinCloseTime = getCloseTime(d, 1);
@@ -25,14 +31,7 @@ class Trade {
     let oneDayOpenTime = getOpenTime(d, 24 * 60);
     let oneDayCloseTime = getCloseTime(d, 24 * 60);
 
-    let oneMinRecord = getDefaultData();
-    let fiveMinRecord = getDefaultData();
-    let fifteenMinRecord = getDefaultData();
-    let oneHourRecord = getDefaultData();
-    let fourHourRecord = getDefaultData();
-    let oneDayRecord = getDefaultData();
-
-    this.ws.on("message", function message(data) {
+    this.ws.on("message", (data) => {
       const reqData = JSON.parse(data.toString());
       //   console.log(reqData);
       if (typeof reqData !== undefined && reqData.data) {
@@ -47,185 +46,200 @@ class Trade {
           console.log("UNDER 1 MIN");
           const recordArrInSameTime = reqData?.data;
           recordArrInSameTime.forEach((elem) => {
-            if (!oneMinRecord.open) {
-              oneMinRecord = {
+            if (!this.oneMinRecord.open) {
+              this.oneMinRecord = {
                 open: elem.price,
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
               };
             }
-            if (oneMinRecord.high < elem.price) {
-              oneMinRecord["high"] = elem.price;
+            if (this.oneMinRecord.high < elem.price) {
+              this.oneMinRecord["high"] = elem.price;
             }
-            if (oneMinRecord.low > elem.price) {
-              oneMinRecord["low"] = elem.price;
+            if (this.oneMinRecord.low > elem.price) {
+              this.oneMinRecord["low"] = elem.price;
             }
-            oneMinRecord["close"] = elem.price;
+            this.oneMinRecord["close"] = elem.price;
           });
         } else {
-          oneMinRecord.openTime = oneMinOpenTime;
-          oneMinRecord.closeTime = oneMinCloseTime;
-          //   pushToDB(oneMinRecord);
+          this.oneMinRecord.openTime = oneMinOpenTime;
+          this.oneMinRecord.closeTime = oneMinCloseTime;
+          this.oneMinRecord.key = "ONEMIN";
+          this.pushToDB(this.oneMinRecord);
           oneMinOpenTime = oneMinCloseTime;
           const newCloseTime = timeStamp.getTime();
           oneMinCloseTime = getCloseTime(newCloseTime, 1);
-          oneMinRecord = getDefaultData();
+          this.oneMinRecord = getDefaultData();
         }
 
         if (timeStamp <= fiveMinCloseTime) {
           console.log("UNDER 5 MIN");
           const recordArrInSameTime = reqData?.data;
           recordArrInSameTime.forEach((elem) => {
-            if (!fiveMinRecord.open) {
-              fiveMinRecord = {
+            if (!this.fiveMinRecord.open) {
+              this.fiveMinRecord = {
                 open: elem.price,
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
               };
             }
-            if (fiveMinRecord.high < elem.price) {
-              fiveMinRecord["high"] = elem.price;
+            if (this.fiveMinRecord.high < elem.price) {
+              this.fiveMinRecord["high"] = elem.price;
             }
-            if (fiveMinRecord.low > elem.price) {
-              fiveMinRecord["low"] = elem.price;
+            if (this.fiveMinRecord.low > elem.price) {
+              this.fiveMinRecord["low"] = elem.price;
             }
-            fiveMinRecord["close"] = elem.price;
+            this.fiveMinRecord["close"] = elem.price;
           });
         } else {
-          fiveMinRecord.openTime = fiveMinOpenTime;
-          fiveMinRecord.closeTime = fiveMinCloseTime;
+          this.fiveMinRecord.openTime = fiveMinOpenTime;
+          this.fiveMinRecord.closeTime = fiveMinCloseTime;
+          this.fiveMinRecord.key = "FIVEMIN";
+          this.pushToDB(this.fiveMinRecord);
           fiveMinOpenTime = fiveMinCloseTime;
           const newCloseTime = timeStamp.getTime();
           fiveMinCloseTime = getCloseTime(newCloseTime, 5);
-          fiveMinRecord = getDefaultData();
+          this.fiveMinRecord = getDefaultData();
         }
 
         if (timeStamp <= fifteenMinCloseTime) {
           console.log("UNDER 15 MIN");
           const recordArrInSameTime = reqData?.data;
           recordArrInSameTime.forEach((elem) => {
-            if (!fifteenMinRecord.open) {
-              fifteenMinRecord = {
+            if (!this.fifteenMinRecord.open) {
+              this.fifteenMinRecord = {
                 open: elem.price,
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
               };
             }
-            if (fifteenMinRecord.high < elem.price) {
-              fifteenMinRecord["high"] = elem.price;
+            if (this.fifteenMinRecord.high < elem.price) {
+              this.fifteenMinRecord["high"] = elem.price;
             }
-            if (fifteenMinRecord.low > elem.price) {
-              fifteenMinRecord["low"] = elem.price;
+            if (this.fifteenMinRecord.low > elem.price) {
+              this.fifteenMinRecord["low"] = elem.price;
             }
-            fifteenMinRecord["close"] = elem.price;
+            this.fifteenMinRecord["close"] = elem.price;
           });
         } else {
-          fifteenMinRecord.openTime = fifteenMinOpenTime;
-          fifteenMinRecord.closeTime = fifteenMinCloseTime;
+          this.fifteenMinRecord.openTime = fifteenMinOpenTime;
+          this.fifteenMinRecord.closeTime = fifteenMinCloseTime;
+          this.fifteenMinRecord.key = "FIFTEENMIN";
+          this.pushToDB(this.fifteenMinRecord);
           fifteenMinOpenTime = fifteenMinCloseTime;
           const newCloseTime = timeStamp.getTime();
           fifteenMinCloseTime = getCloseTime(newCloseTime, 5);
-          fifteenMinRecord = getDefaultData();
+          this.fifteenMinRecord = getDefaultData();
         }
 
         if (timeStamp <= oneHourCloseTime) {
           console.log("UNDER 1 HOUR");
           const recordArrInSameTime = reqData?.data;
           recordArrInSameTime.forEach((elem) => {
-            if (!oneHourRecord.open) {
-              oneHourRecord = {
+            if (!this.oneHourRecord.open) {
+              this.oneHourRecord = {
                 open: elem.price,
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
               };
             }
-            if (oneHourRecord.high < elem.price) {
-              oneHourRecord["high"] = elem.price;
+            if (this.oneHourRecord.high < elem.price) {
+              this.oneHourRecord["high"] = elem.price;
             }
-            if (oneHourRecord.low > elem.price) {
-              oneHourRecord["low"] = elem.price;
+            if (this.oneHourRecord.low > elem.price) {
+              this.oneHourRecord["low"] = elem.price;
             }
-            oneHourRecord["close"] = elem.price;
+            this.oneHourRecord["close"] = elem.price;
           });
         } else {
-          oneHourRecord.openTime = oneHourOpenTime;
-          oneHourRecord.closeTime = oneHourCloseTime;
+          this.oneHourRecord.openTime = oneHourOpenTime;
+          this.oneHourRecord.closeTime = oneHourCloseTime;
+          this.oneHourRecord.key = "ONEHOUR";
+          this.pushToDB(this.oneHourRecord);
           oneHourOpenTime = oneHourCloseTime;
           const newCloseTime = timeStamp.getTime();
           oneHourCloseTime = getCloseTime(newCloseTime, 5);
-          oneHourRecord = getDefaultData();
+          this.oneHourRecord = getDefaultData();
         }
 
         if (timeStamp <= fourHourCloseTime) {
           console.log("UNDER  4 HOUR");
           const recordArrInSameTime = reqData?.data;
           recordArrInSameTime.forEach((elem) => {
-            if (!fourHourRecord.open) {
-              fourHourRecord = {
+            if (!this.fourHourRecord.open) {
+              this.fourHourRecord = {
                 open: elem.price,
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
               };
             }
-            if (fourHourRecord.high < elem.price) {
-              fourHourRecord["high"] = elem.price;
+            if (this.fourHourRecord.high < elem.price) {
+              this.fourHourRecord["high"] = elem.price;
             }
-            if (fourHourRecord.low > elem.price) {
-              fourHourRecord["low"] = elem.price;
+            if (this.fourHourRecord.low > elem.price) {
+              this.fourHourRecord["low"] = elem.price;
             }
-            fourHourRecord["close"] = elem.price;
+            this.fourHourRecord["close"] = elem.price;
           });
         } else {
-          fourHourRecord.openTime = fourHourOpenTime;
-          fourHourRecord.closeTime = fourHourCloseTime;
+          this.fourHourRecord.openTime = fourHourOpenTime;
+          this.fourHourRecord.closeTime = fourHourCloseTime;
+          this.fourHourRecord.key = "FOURHOUR";
+          this.pushToDB(this.fourHourRecord);
           fourHourOpenTime = fourHourCloseTime;
           const newCloseTime = timeStamp.getTime();
           fourHourCloseTime = getCloseTime(newCloseTime, 5);
-          fourHourRecord = getDefaultData();
+          this.fourHourRecord = getDefaultData();
         }
 
         if (timeStamp <= oneDayCloseTime) {
           console.log("UNDER 1 DAY");
           const recordArrInSameTime = reqData?.data;
           recordArrInSameTime.forEach((elem) => {
-            if (!oneDayRecord.open) {
-              oneDayRecord = {
+            if (!this.oneDayRecord.open) {
+              this.oneDayRecord = {
                 open: elem.price,
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
               };
             }
-            if (oneDayRecord.high < elem.price) {
-              oneDayRecord["high"] = elem.price;
+            if (this.oneDayRecord.high < elem.price) {
+              this.oneDayRecord["high"] = elem.price;
             }
-            if (oneDayRecord.low > elem.price) {
-              oneDayRecord["low"] = elem.price;
+            if (this.oneDayRecord.low > elem.price) {
+              this.oneDayRecord["low"] = elem.price;
             }
-            oneDayRecord["close"] = elem.price;
+            this.oneDayRecord["close"] = elem.price;
           });
         } else {
-          oneDayRecord.openTime = oneDayOpenTime;
-          oneDayRecord.closeTime = oneDayCloseTime;
+          this.oneDayRecord.openTime = oneDayOpenTime;
+          this.oneDayRecord.closeTime = oneDayCloseTime;
+          this.oneDayRecord.key = "ONEDAY";
+          this.pushToDB(this.oneDayRecord);
           oneDayOpenTime = oneDayCloseTime;
           const newCloseTime = timeStamp.getTime();
           oneDayCloseTime = getCloseTime(newCloseTime, 5);
-          oneDayRecord = getDefaultData();
+          this.oneDayRecord = getDefaultData();
         }
       }
     });
-  };
+  }
 
   pushToDB(data) {
     dbConnect(this.coin)
-      .then(() => {
-        console.log("Pushing to db");
+      .then((db) => {
+        console.log("Pushing to db", this.coin);
         console.log("Data", data);
+        db.collection(`${this.coin}-Trade-${data.key}`)
+          .insertOne({ ...data, createdAt: new Date() })
+          .then((doc) => console.log("Inserted Successfully", doc))
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.error(err));
   }
@@ -233,3 +247,6 @@ class Trade {
 
 const t = new Trade("XBTUSD");
 t.getData();
+
+const t2 = new Trade("ETHUSD");
+t2.getData();
