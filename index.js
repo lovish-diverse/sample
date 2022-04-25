@@ -1,7 +1,9 @@
-const WebSocket = require("ws");
-const { dbConnect } = require("./utils/db");
+import WebSocket from "ws";
+import kafka from "./kafka.js";
+import dbConnect from "./utils/db.js";
+import crypto from "crypto";
 
-const { getOpenTime, getCloseTime, getDefaultData } = require("./utils/utils");
+import { getOpenTime, getCloseTime, getDefaultData } from "./utils/utils.js";
 
 class Trade {
   constructor(coin) {
@@ -14,6 +16,7 @@ class Trade {
     this.oneHourRecord = getDefaultData();
     this.fourHourRecord = getDefaultData();
     this.oneDayRecord = getDefaultData();
+    this.db = dbConnect(this.coin);
   }
 
   getData() {
@@ -231,22 +234,47 @@ class Trade {
     });
   }
 
-  pushToDB(data) {
-    dbConnect(this.coin)
-      .then((db) => {
-        console.log("Pushing to db", this.coin);
-        console.log("Data", data);
-        db.collection(`${this.coin}-Trade-${data.key}`)
-          .insertOne({ ...data, createdAt: new Date() })
-          .then((doc) => console.log("Inserted Successfully", doc))
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => console.error(err));
+  async pushToDB(data) {
+    try {
+      const doc = await (await this.db)
+        .collection(`${this.coin}-Trade-${data.key}`)
+        .insertOne({ ...data, createdAt: new Date() });
+      if (doc) {
+        console.log("Document added successfully", doc);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async pushToKafka() {
+    const producer = kafka.producer({ allowAutoTopicCreation: true });
+    await producer.connect();
+    console.log(`Connected to lovish-${this.coin} topic`);
+    setInterval(() => {
+      producer.send({
+        topic: `lovish-${this.coin}`,
+        messages: [
+          {
+            key: crypto.randomUUID(),
+            value: JSON.stringify({
+              "1min": this.oneMinRecord,
+              "5min": this.fiveMinRecord,
+              "15min": this.fifteenMinRecord,
+              "1h": this.oneHourRecord,
+              "4h": this.fourHourRecord,
+              "1d": this.oneDayRecord,
+            }),
+          },
+        ],
+      });
+    }, 1000);
   }
 }
 
 const t = new Trade("XBTUSD");
 t.getData();
+t.pushToKafka();
 
-const t2 = new Trade("ETHUSD");
-t2.getData();
+// const t2 = new Trade("ETHUSD");
+// t2.getData();

@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev:producer": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "kafkajs": "^1.16.0",
     "mongodb": "^4.5.0",
     "ws": "^8.5.0"
   },

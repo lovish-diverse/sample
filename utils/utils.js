@@ -21,4 +21,4 @@ const getDefaultData = () => ({
   key: "",
 });
 
-module.exports = { getCloseTime, getOpenTime, getDefaultData };
+export { getCloseTime, getOpenTime, getDefaultData };
