@@ -276,5 +276,6 @@ const t = new Trade("XBTUSD");
 t.getData();
 t.pushToKafka();
 
-// const t2 = new Trade("ETHUSD");
-// t2.getData();
+const t2 = new Trade("ETHUSD");
+t2.getData();
+t2.pushToKafka();
