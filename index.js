@@ -55,6 +55,7 @@ class Trade {
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
+                type: this.coin,
               };
             }
             if (this.oneMinRecord.high < elem.price) {
@@ -64,10 +65,10 @@ class Trade {
               this.oneMinRecord["low"] = elem.price;
             }
             this.oneMinRecord["close"] = elem.price;
+            this.oneMinRecord.openTime = oneMinOpenTime;
+            this.oneMinRecord.closeTime = oneMinCloseTime;
           });
         } else {
-          this.oneMinRecord.openTime = oneMinOpenTime;
-          this.oneMinRecord.closeTime = oneMinCloseTime;
           this.oneMinRecord.key = "ONEMIN";
           this.pushToDB(this.oneMinRecord);
           oneMinOpenTime = oneMinCloseTime;
@@ -86,6 +87,7 @@ class Trade {
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
+                type: this.coin,
               };
             }
             if (this.fiveMinRecord.high < elem.price) {
@@ -95,10 +97,10 @@ class Trade {
               this.fiveMinRecord["low"] = elem.price;
             }
             this.fiveMinRecord["close"] = elem.price;
+            this.fiveMinRecord.openTime = fiveMinOpenTime;
+            this.fiveMinRecord.closeTime = fiveMinCloseTime;
           });
         } else {
-          this.fiveMinRecord.openTime = fiveMinOpenTime;
-          this.fiveMinRecord.closeTime = fiveMinCloseTime;
           this.fiveMinRecord.key = "FIVEMIN";
           this.pushToDB(this.fiveMinRecord);
           fiveMinOpenTime = fiveMinCloseTime;
@@ -117,6 +119,7 @@ class Trade {
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
+                type: this.coin,
               };
             }
             if (this.fifteenMinRecord.high < elem.price) {
@@ -126,10 +129,10 @@ class Trade {
               this.fifteenMinRecord["low"] = elem.price;
             }
             this.fifteenMinRecord["close"] = elem.price;
+            this.fifteenMinRecord.openTime = fifteenMinOpenTime;
+            this.fifteenMinRecord.closeTime = fifteenMinCloseTime;
           });
         } else {
-          this.fifteenMinRecord.openTime = fifteenMinOpenTime;
-          this.fifteenMinRecord.closeTime = fifteenMinCloseTime;
           this.fifteenMinRecord.key = "FIFTEENMIN";
           this.pushToDB(this.fifteenMinRecord);
           fifteenMinOpenTime = fifteenMinCloseTime;
@@ -148,6 +151,7 @@ class Trade {
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
+                type: this.coin,
               };
             }
             if (this.oneHourRecord.high < elem.price) {
@@ -157,10 +161,10 @@ class Trade {
               this.oneHourRecord["low"] = elem.price;
             }
             this.oneHourRecord["close"] = elem.price;
+            this.oneHourRecord.openTime = oneHourOpenTime;
+            this.oneHourRecord.closeTime = oneHourCloseTime;
           });
         } else {
-          this.oneHourRecord.openTime = oneHourOpenTime;
-          this.oneHourRecord.closeTime = oneHourCloseTime;
           this.oneHourRecord.key = "ONEHOUR";
           this.pushToDB(this.oneHourRecord);
           oneHourOpenTime = oneHourCloseTime;
@@ -179,6 +183,7 @@ class Trade {
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
+                type: this.coin,
               };
             }
             if (this.fourHourRecord.high < elem.price) {
@@ -188,10 +193,10 @@ class Trade {
               this.fourHourRecord["low"] = elem.price;
             }
             this.fourHourRecord["close"] = elem.price;
+            this.fourHourRecord.openTime = fourHourOpenTime;
+            this.fourHourRecord.closeTime = fourHourCloseTime;
           });
         } else {
-          this.fourHourRecord.openTime = fourHourOpenTime;
-          this.fourHourRecord.closeTime = fourHourCloseTime;
           this.fourHourRecord.key = "FOURHOUR";
           this.pushToDB(this.fourHourRecord);
           fourHourOpenTime = fourHourCloseTime;
@@ -210,6 +215,7 @@ class Trade {
                 close: elem.price,
                 high: elem.price,
                 low: elem.price,
+                type: this.coin,
               };
             }
             if (this.oneDayRecord.high < elem.price) {
@@ -219,10 +225,10 @@ class Trade {
               this.oneDayRecord["low"] = elem.price;
             }
             this.oneDayRecord["close"] = elem.price;
+            this.oneDayRecord.openTime = oneDayOpenTime;
+            this.oneDayRecord.closeTime = oneDayCloseTime;
           });
         } else {
-          this.oneDayRecord.openTime = oneDayOpenTime;
-          this.oneDayRecord.closeTime = oneDayCloseTime;
           this.oneDayRecord.key = "ONEDAY";
           this.pushToDB(this.oneDayRecord);
           oneDayOpenTime = oneDayCloseTime;
@@ -264,6 +270,7 @@ class Trade {
               "1h": this.oneHourRecord,
               "4h": this.fourHourRecord,
               "1d": this.oneDayRecord,
+              type: this.coin,
             }),
           },
         ],
